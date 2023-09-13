@@ -2,6 +2,10 @@
 
 This is an implementation of WireGuard in Go.
 
+但是做了一些小修改，规避防火墙的检测。
+
+- 修改 Type 为随机 uint32 (暂时是静态的)
+
 ## Usage
 
 Most Linux kernel WireGuard users are used to adding an interface with `ip link add wg0 type wireguard`. With wireguard-go, instead simply run:
