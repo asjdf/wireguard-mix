@@ -18,7 +18,7 @@ go build -o wireguard-mix
 
 这样子开接口：
 
-```
+```bash
 wireguard-mix wg0
 ```
 
@@ -40,7 +40,7 @@ sudo chmod +x /usr/bin/wg-quick
 
 魔改版的 wg-quick 可以使用 WgBin 来选择 wireguard 实例，留空则与原版行为一致
 
-```toml
+```conf
 [Interface]
 ListenPort = port
 PrivateKey = PrivateKey 
@@ -52,8 +52,6 @@ WgBin 可以直接填写路径，也这样写先丢到 path 里去再玩
 ```bash
 sudo cp wireguard-mix /usr/local/bin/
 ```
-
-```bash
 
 ## wireguard-go 的 License
 
