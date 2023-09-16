@@ -1,64 +1,61 @@
-# Go Implementation of [WireGuard](https://www.wireguard.com/)
+# wireguard-mix
 
-This is an implementation of WireGuard in Go.
+基于 wireguard-go,做了一些小修改，规避防火墙的检测。
 
-但是做了一些小修改，规避防火墙的检测。
+暂时只做了一点点改动，但是满足需求了
 
 - 修改 Type 为随机 uint32 (暂时是静态的)
 
-## Usage
+## 构建
 
-Most Linux kernel WireGuard users are used to adding an interface with `ip link add wg0 type wireguard`. With wireguard-go, instead simply run:
+需要 golang 1.20+
 
-```
-$ wireguard-go wg0
-```
-
-This will create an interface and fork into the background. To remove the interface, use the usual `ip link del wg0`, or if your system does not support removing interfaces directly, you may instead remove the control socket via `rm -f /var/run/wireguard/wg0.sock`, which will result in wireguard-go shutting down.
-
-To run wireguard-go without forking to the background, pass `-f` or `--foreground`:
-
-```
-$ wireguard-go -f wg0
+```bash
+go build -o wireguard-mix
 ```
 
-When an interface is running, you may use [`wg(8)`](https://git.zx2c4.com/wireguard-tools/about/src/man/wg.8) to configure it, as well as the usual `ip(8)` and `ifconfig(8)` commands.
+## 用法
 
-To run with more logging you may set the environment variable `LOG_LEVEL=debug`.
-
-## Platforms
-
-### Linux
-
-This will run on Linux; however you should instead use the kernel module, which is faster and better integrated into the OS. See the [installation page](https://www.wireguard.com/install/) for instructions.
-
-### macOS
-
-This runs on macOS using the utun driver. It does not yet support sticky sockets, and won't support fwmarks because of Darwin limitations. Since the utun driver cannot have arbitrary interface names, you must either use `utun[0-9]+` for an explicit interface name or `utun` to have the kernel select one for you. If you choose `utun` as the interface name, and the environment variable `WG_TUN_NAME_FILE` is defined, then the actual name of the interface chosen by the kernel is written to the file specified by that variable.
-
-### Windows
-
-This runs on Windows, but you should instead use it from the more [fully featured Windows app](https://git.zx2c4.com/wireguard-windows/about/), which uses this as a module.
-
-### FreeBSD
-
-This will run on FreeBSD. It does not yet support sticky sockets. Fwmark is mapped to `SO_USER_COOKIE`.
-
-### OpenBSD
-
-This will run on OpenBSD. It does not yet support sticky sockets. Fwmark is mapped to `SO_RTABLE`. Since the tun driver cannot have arbitrary interface names, you must either use `tun[0-9]+` for an explicit interface name or `tun` to have the program select one for you. If you choose `tun` as the interface name, and the environment variable `WG_TUN_NAME_FILE` is defined, then the actual name of the interface chosen by the kernel is written to the file specified by that variable.
-
-## Building
-
-This requires an installation of the latest version of [Go](https://go.dev/).
+这样子开接口：
 
 ```
-$ git clone https://git.zx2c4.com/wireguard-go
-$ cd wireguard-go
-$ make
+wireguard-mix wg0
 ```
 
-## License
+然后就可以用 [`wg(8)`](https://git.zx2c4.com/wireguard-tools/about/src/man/wg.8)，`ip(8)` 和`ifconfig(8)` 配置了
+
+## wg-quick-mix
+
+为了方便使用, wg-quick 也给出了魔改, 位于项目根目录下
+
+但是对 2020 及以前的 wg 会有一些适配问题，如果使用出现问题，可以尝试 `apt upgrade`
+
+```bash
+sudo apt update
+sudo apt install -y wireguard-tools
+sudo mv /usr/bin/wg-quick /usr/bin/wg-quick.bak
+sudo cp wireguard-mix/wg-quick /usr/bin/wg-quick
+sudo chmod +x /usr/bin/wg-quick
+```
+
+魔改版的 wg-quick 可以使用 WgBin 来选择 wireguard 实例，留空则与原版行为一致
+
+```toml
+[Interface]
+ListenPort = port
+PrivateKey = PrivateKey 
+WgBin = wireguard-mix
+```
+
+WgBin 可以直接填写路径，也这样写先丢到 path 里去再玩
+
+```bash
+sudo cp wireguard-mix /usr/local/bin/
+```
+
+```bash
+
+## wireguard-go 的 License
 
     Copyright (C) 2017-2023 WireGuard LLC. All Rights Reserved.
     

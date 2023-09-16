@@ -16,16 +16,16 @@ generate-version-and-build:
 	git update-index --assume-unchanged version.go || true
 	@$(MAKE) wireguard-go
 
-wireguard-go: $(wildcard *.go) $(wildcard */*.go)
+wireguard-mix: $(wildcard *.go) $(wildcard */*.go)
 	go build -v -o "$@"
 
-install: wireguard-go
-	@install -v -d "$(DESTDIR)$(BINDIR)" && install -v -m 0755 "$<" "$(DESTDIR)$(BINDIR)/wireguard-go"
+install: wireguard-mix
+	@install -v -d "$(DESTDIR)$(BINDIR)" && install -v -m 0755 "$<" "$(DESTDIR)$(BINDIR)/wireguard-mix"
 
 test:
 	go test ./...
 
 clean:
-	rm -f wireguard-go
+	rm -f wireguard-mix
 
 .PHONY: all clean test install generate-version-and-build
